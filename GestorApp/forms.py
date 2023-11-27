@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import Encomienda, Sede, Bus, Programacion
 from datetime import datetime
 
+import random
 
 class RegistrarUsuario(UserCreationForm):
     email = forms.EmailField(max_length=250, help_text="El sistema requiere un correo electrónico para asignar un nuevo usuario.")
@@ -160,11 +161,12 @@ class GuardarBus(forms.ModelForm):
         # print(int(id) > 0)
         try:
             if int(id) > 0:
+
                 bus = Bus.objects.exclude(id=id).get(placa_bus=placa_bus)
             else:
                 bus = Bus.objects.get(placa_bus=placa_bus)
         except:
-            return placa_bus
+            return placa_bus.upper()
             # raise forms.ValidationError(f"{bus_number} Category Already Exists.")
         raise forms.ValidationError(f"{placa_bus}: Esta placa ya existe en sistema")
 
@@ -188,7 +190,6 @@ class GuardarProgramacion(forms.ModelForm):
                 break
         return codigo
 
- 
 
 
 
@@ -228,11 +229,11 @@ class GuardarEncomienda(forms.ModelForm):
             while True:
                 enc = Encomienda.objects.filter(codigo=str(pref))
                 if prog > 0:
-                    codigo = str(int(pref))
+                    codigo_encomienda = str(int(pref))
                 else:
-                    codigo = str(pref)
+                    codigo_encomienda = str(pref)
                     break
-            return codigo
+            return codigo_encomienda
     """
 
 

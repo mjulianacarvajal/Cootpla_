@@ -1,5 +1,7 @@
-# gestion de usuarios y accesos en inglés: clases y variables propias de las librerias
+
 import json
+from typing import Any, Dict
+
 from datetime import datetime
 
 
@@ -10,7 +12,7 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect,render
 
 from .forms import ActualizarContrasena, ActualizarPerfil, GuardarBus,GuardarEncomienda,GuardarProgramacion,GuardarSede,RegistrarUsuario
 from .models import Bus, Conductor, Encomienda, Programacion, Propietario, Sede
@@ -322,7 +324,7 @@ def guardar_programacion(request: HttpRequest):
 def adm_programacion(request: HttpRequest, pk: str | None = None):
     context['page_title'] = "Gestión Programación"
     buses = Bus.objects.filter(estado=1).all()
-    sedes = Sede.objects.all()
+    sedes = Sede.objects.filter(tipo=1).all()
     conductores = Conductor.objects.filter(estado=1)
     context['buses'] = buses
     context['sedes'] = sedes
@@ -332,7 +334,7 @@ def adm_programacion(request: HttpRequest, pk: str | None = None):
         programacion = Programacion.objects.get(id=pk)
         context['programacion'] = programacion
     else:
-        context[' programacion'] = {}
+        context['programacion'] = {}
 
     return render(request, 'adm_programacion.html', context)
 
@@ -369,24 +371,17 @@ def encomienda(request: HttpRequest):
 def guardar_encomienda(request: HttpRequest):
     resp = {'status': 'failed', 'msg': ''}
     if request.method == 'POST':
-        if (request.POST['id']).isnumeric():
-            encomienda = Encomienda.objects.get(pk=request.POST['id'])
-        else:
-            encomienda = None
-            if encomienda is None:
-                form = GuardarEncomienda(request.POST)
-            else:
-                form = GuardarBus(request.POST, instance=encomienda)
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'La encomienda ha guardado exitosamente')
-                resp['status'] = 'success'
-            else:
-                for fields in form:
-                    for error in fields.errors:
-                        resp['msg'] += str(error + "<br>")
+        form = GuardarEncomienda(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'La encomienda ha guardado exitosamente')
+            resp['status'] = 'success'
     else:
-        resp['msg'] = 'No se han guardado datos.'
+        for fields in form:
+            for error in fields.errors:
+                resp['msg'] += str(error + "<br>")
+        else:
+            resp['msg'] = 'No se han guardado datos.'
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 

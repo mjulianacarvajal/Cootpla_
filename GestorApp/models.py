@@ -3,20 +3,6 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-"""
-
-
-en estados que es mejor?
-
-from django.utils.translation import gettext_lazy as _
-
-class Estado(models.TextChoices):
-    ACTIVO = '1', _('Activo')
-    INACTIVO = '0', _('Inactivo')
-
-estado = models.CharField(max_length=1, choices=Estado.choices, default=Estado.ACTIVO, verbose_name="Estado")"""
-
-
 class Conductor(models.Model): #
     conductor = models.CharField(max_length=100)
     codigo = models.CharField(max_length=100)
@@ -54,8 +40,8 @@ class Sede(models.Model):
 
 class Bus(models.Model):
     propietario = models.ForeignKey(Propietario, on_delete=models.CASCADE, blank=True, null=True)
-    numero_bus = models.CharField(max_length=10)
-    placa_bus = models.CharField(max_length=10)
+    numero_bus = models.CharField(max_length=5)
+    placa_bus = models.CharField(max_length=8)
     asientos = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(50)])
     estado = models.CharField(max_length=2, choices=(('1', 'Activo'), ('2', 'Inactivo'), ), default=1)
     fecha_creado = models.DateTimeField(default=timezone.now)
@@ -98,7 +84,8 @@ class Encomienda(models.Model):
     cedula_recibido = models.CharField(max_length=12)
     telefono_recibido = models.CharField(max_length=12)
     codigo_encomienda = models.CharField(max_length=5)
-    caracteristicas = models.CharField(max_length=250)
+    #costo_envio
+    caracteristicas = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1000), MaxValueValidator(100000)])
     estado = models.CharField(max_length=2, choices=(('1', 'Programada'), ('2', 'Entregada')), default=1)
     fecha_creado = models.DateTimeField(default=timezone.now)
     fecha_actualizado = models.DateTimeField(auto_now=True)
