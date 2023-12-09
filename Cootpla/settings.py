@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'GestorApp',
-    'dbbackup',  #pip install dbbackup
+    'dbbackup', #pip install django-dbbackup
     'django_apscheduler', #pip install django_apscheduler
     'import_export', #pip install import_export
     'cryptography', #pip install cryptography

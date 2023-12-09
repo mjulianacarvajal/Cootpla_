@@ -1,21 +1,20 @@
 
-import json
-from typing import Any, Dict
-
-from datetime import datetime
-
-
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.management import call_command
-from django.db.models import Q
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect,render
 
-from .forms import ActualizarContrasena, ActualizarPerfil, GuardarBus,GuardarEncomienda,GuardarProgramacion,GuardarSede,RegistrarUsuario
-from .models import Bus, Conductor, Encomienda, Programacion, Propietario, Sede
+from django.core.management import call_command
+
+from django.shortcuts import render,redirect
+import json
+from django.contrib import messages
+from django.http import HttpResponse,HttpRequest
+from .forms import RegistrarUsuario, ActualizarPerfil,ActualizarContrasena,GuardarSede, GuardarBus,GuardarProgramacion, GuardarEncomienda
+from .models import Sede, Bus, Programacion, Encomienda,Propietario, Conductor
+
+from datetime import datetime
+
+from django.db.models import Q, QuerySet
 
 context = {
     'page_title' : 'Visor de Viajes Intermunicipales',
@@ -44,29 +43,29 @@ def login_user(request):
 
 @login_required
 def inicio(request: HttpRequest):
-    
+    context = {}
     context['page_title'] = 'Inicio'
     context['buses'] = Bus.objects.count()
     context['encomiendas'] = Encomienda.objects.count()
     context['programaciones'] = Programacion.objects.filter(estado= 1, programacion__gt = datetime.today()).count()
     context['username'] = User.objects.count()
 
-    # labels = []
-    # data = []
+    labels = []
+    data = []
   
-    # queryset = Bus.objects.order_by('estado')
-    # for buses_c in queryset:
-    #     if buses_c.estado == '1':
-    #         labels.append(buses_c.numero_bus)
-    #         data.append(buses_c.asientos)       
+    queryset = Bus.objects.order_by('estado')
+    for buses_c in queryset:
+        if buses_c.estado == '1':
+            labels.append(buses_c.numero_bus)
+            data.append(buses_c.asientos)       
 
-    # context = {
-    #     'labels': labels,
-    #     'data': data,
-    # }
+    context = {
+        'labels': labels,
+        'data': data,
+    }
 
 
-    return render(request, 'inicio.html',context)
+    return render(request,'inicio.html',context)
 
 
 
@@ -217,14 +216,36 @@ def bus(request: HttpRequest):
     context['buses'] = buses
     return render(request, 'bus.html', context)
 
+@login_required
+def guardar_bus(request:HttpRequest):
+    resp = {'status': 'failed', 'msg': ''}
+    if request.method == 'POST':
+        if (request.POST['id']).isnumeric():
+            bus = Bus.objects.get(pk=request.POST['id'])
+        else:
+            bus = None
+        if bus is None:
+            form = GuardarBus(request.POST)
+        else:
+            form = GuardarBus(request.POST, instance=bus)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'El Bus se ha guardado exitosamente')
+            resp['status'] = 'success'
+        else:
+            for fields in form:
+                for error in fields.errors:
+                    resp['msg'] += str(error + "<br>")
+    else:
+        resp['msg'] = 'No se han guardado datos.'
+    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
-#
+
+
 # @login_required
 # def guardar_bus(request: HttpRequest):
 #     resp = {'status': 'failed', 'msg': ''}
-#     print(f"datos: {request}")
-#
 #     if request.method == 'POST':
 #         form = GuardarBus(data=request.POST)
 #         if form.is_valid():
@@ -238,23 +259,6 @@ def bus(request: HttpRequest):
 #     else:
 #         resp['msg'] = 'No se han guardado datos.'
 #     return HttpResponse(json.dumps(resp), content_type='application/json')
-
-@login_required
-def guardar_bus(request: HttpRequest):
-    resp = {'status': 'failed', 'msg': ''}
-    if request.method == 'POST':
-        form = GuardarBus(data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'El Bus se ha guardado exitosamente')
-            resp['status'] = 'success'
-        else:
-            for fields in form:
-                for error in fields.errors:
-                    resp['msg'] += str(error + "<br>")
-    else:
-        resp['msg'] = 'No se han guardado datos.'
-    return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 @login_required
@@ -302,41 +306,69 @@ def programacion(request: HttpRequest):
 @login_required
 def guardar_programacion(request: HttpRequest):
     resp = {'status':'failed','msg':''}
+    print(f"datos: {request}")
     if request.method == 'POST':
-        form = GuardarProgramacion(request.POST)
+        if (request.POST['id']).isnumeric():
+           programacion = Programacion.objects.get(pk=request.POST['id'])
+        else:
+            programacion = None
+        if programacion is None:
+            form = GuardarProgramacion(request.POST)
+        else:
+            form = GuardarProgramacion(request.POST, instance=programacion)
         if form.is_valid():
             form.save()
             messages.success(request, 'La Programación se ha guardado exitosamente.')
             resp['status'] = 'success'
         else:
-            print(form.errors)
+            #print(form.errors)
             for fields in form:
                 for error in fields.errors:
                     resp['msg'] += str(error + "<br>")
     else:
-        resp['msg'] = 'No se han guardado datos.'
+         resp['msg'] = 'No se han guardado datos.'
     return HttpResponse(json.dumps(resp), content_type = 'application/json')
 
 
-
+#
+#
+# @login_required
+# def adm_programacion(request: HttpRequest, pk: str | None = None):
+#     context['page_title'] = "Gestión Programación"
+#     buses = Bus.objects.filter(estado=1).all()
+#     sedes = Sede.objects.filter(tipo=1).all()
+#     conductores = Conductor.objects.filter(estado=1)
+#     context['buses'] = buses
+#     context['sedes'] = sedes
+#     context['conductores'] = conductores
+#
+#     if pk != None:
+#         programacion = Programacion.objects.get(id=pk)
+#         context['programacion'] = programacion
+#     else:
+#         context['programacion'] = {}
+#
+#     return render(request, 'adm_programacion.html', context)
 
 @login_required
-def adm_programacion(request: HttpRequest, pk: str | None = None):
-    context['page_title'] = "Gestión Programación"
-    buses = Bus.objects.filter(estado=1).all()
-    sedes = Sede.objects.filter(tipo=1).all()
-    conductores = Conductor.objects.filter(estado=1)
+def adm_programacion(request, pk=None):
+    context['page_title'] = "Manage Schedule"
+    buses = Bus.objects.all()
+    sedes = Sede.objects.all()
+    conductores = Conductor.objects.all()
+
     context['buses'] = buses
     context['sedes'] = sedes
     context['conductores'] = conductores
 
-    if pk != None:
-        programacion = Programacion.objects.get(id=pk)
+    if not pk is None:
+        programacion = Programacion.objects.get(id = pk)
         context['programacion'] = programacion
     else:
         context['programacion'] = {}
 
     return render(request, 'adm_programacion.html', context)
+
 
 
 @login_required
@@ -388,7 +420,7 @@ def guardar_encomienda(request: HttpRequest):
 @login_required
 def adm_encomienda(request: HttpRequest, pk: str | None = None):
     context['page_title'] = "Gestión de Encomiendas"
-        ##
+
     encomiendas = Encomienda.objects.all()
     context['encomiendas'] = encomiendas
     if not pk is None:

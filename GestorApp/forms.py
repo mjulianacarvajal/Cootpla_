@@ -172,13 +172,23 @@ class GuardarBus(forms.ModelForm):
 
 
 class GuardarProgramacion(forms.ModelForm):
+    codigo = forms.CharField(max_length="250")
+    programacion = forms.CharField()
 
     class Meta:
         model = Programacion
         fields = ('codigo', 'bus', 'origen', 'destino', 'precio','programacion', 'estado')
 
     def clean_codigo(self):
-      
+        id = self.instance.id if self.instance.id else 0
+        if id > 0:
+            try:
+                programacion = Programacion.objects.get(id=id)
+                return programacion.codigo
+            except:
+                codigo = ''
+        else:
+            codigo = ''
         pref = datetime.today().strftime('%Y%m%d')
         codigo = str(1).zfill(4)
         while True:
@@ -189,6 +199,7 @@ class GuardarProgramacion(forms.ModelForm):
                 codigo = str(pref + codigo)
                 break
         return codigo
+
 
 
 

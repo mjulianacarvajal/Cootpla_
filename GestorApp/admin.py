@@ -38,7 +38,7 @@ class SedeAdmin(admin.ModelAdmin):
 
 @admin.register(Bus)
 class BusAdmin(ImportExportModelAdmin):
-    resource_class = ProgramacionResource
+    resource_class = BusResource
     list_display = ('propietario','placa_bus','numero_bus','asientos','estado',)
 
     def admin_bus(self, obj):
@@ -49,7 +49,7 @@ class BusAdmin(ImportExportModelAdmin):
 @admin.register(Programacion)
 class ProgramacionAdmin(ImportExportModelAdmin):
     resource_class = ProgramacionResource
-    list_display = ('codigo','bus','origen','destino','precio','estado','fecha_creado','fecha_actualizado',)
+    list_display = ('codigo','bus','origen','destino','precio','programacion','estado','fecha_creado','fecha_actualizado',)
 
     def autor(self, obj):
         return 'Administración de la Programación'

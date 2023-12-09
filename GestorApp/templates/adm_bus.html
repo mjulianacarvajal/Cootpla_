@@ -2,6 +2,7 @@
 <div class="container-fluid">
     <form action=" " id="bus-form">
         {% csrf_token %}
+        <input type="hidden" name="id" value="{{ bus.id }}">
         <div class="form-group mb-3 ">
             <label for="propietario" class="control-label">Propietario</label>
             <select name="propietario" id="propietario" class="form-select rounded-0">

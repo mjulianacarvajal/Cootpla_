@@ -28,7 +28,7 @@
 
                             <th class="px-2 py-2 text-center">Bus  </th>
 
-                            <th class="px-2 py-2 text-center">Rura(Desde - Hacia)</th>
+                            <th class="px-2 py-2 text-center">Ruta(Desde - Hacia)</th>
                             <th class="px-2 py-2 text-center">Tarifa</th>
                             <th class="px-2 py-2 text-center">Estado</th>
                             <th class="px-2 py-2 text-center">Acción</th>
@@ -41,22 +41,18 @@
                             <td class="px-2 py-1 align-middle">{{ user.username }}</td>
 
                             <td class="px-2 py-1 align-middle">{{ programacion.conductor }}</td>
-
                            <td class="px-2 py-1 align-middle">{{ programacion.programacion|date:"Y-m-d h:i A" }}</td>
 
                             <td class="px-2 py-1 align-middle">
                                 <div class="lh-1">
                                     <div>{{ programacion.bus.numero_bus }}</div>
-                                   
                                     <small>{{ programacion.bus.placa_bus }}</small>
                                 </div>
                             </td>
-                            <td class="px-2 py-1 align-middle">
-                                <div class="lh-1">
-                                    <div class:text-align-center>{{ programacion.origen }}</div>
-                                             <strong> a</strong>
+                            <td class="px-2 py-1 align-center">
+                                    <div class="text-align-center">{{ programacion.origen }}</div>
+                                              a
                                     <div>{{ programacion.destino }}</div>
-                                </div>
                             </td>
                             <td class="px-2 py-1 align-middle"> $ {{ programacion.precio|intcomma }}</td>
 
@@ -99,7 +95,7 @@
         $('#despacho-lista').DataTable({
             columnDefs: [{
                 orderable: false,
-                targets: 7
+                targets: 8
             }],
 
             "language": {

@@ -77,55 +77,42 @@
     </div>
     <div class="card-body">
             <<div class="row justify-content-center justify-content-x-start">
-               
-                <div class="col-sm-3">
 
-                            <h5>Capacidad por vehiculo</h5>  
-                        <canvas id="myChart1" width="35" height="55"></canvas>
-                            <script>
-                            var ctx = document.getElementById('myChart').getContext('2d');
-                            var myChart = new Chart(ctx, {
-                            type: 'line',
-                            data: {
+        <div class="col-sm-3">
 
-                            datasets: [{
-                                data:  {{ data|safe}},
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgb(105,114,114)',
+            <h5>Capacidad por vehiculo</h5>
+            <canvas id="myChart1" width="35" height="55"></canvas>
+            <script>
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
 
+                        datasets: [{
+                            data: {{ data|safe}},
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgb(105,114,114)',
+                            ],
 
-                                ],
-
-                                borderWidth: 1
+                            borderWidth: 1
 
 
-                            }],
-                            labels: {{ labels|safe }}
-                                },
+                        }],
+                        labels: {{ labels|safe }}
+                    },
 
-                            });
-                        </script>  
-                 </div>
-            </div>
+                });
+            </script>
         </div>
     </div>
-    <div class="container">
-    <div class="row align-items-center h-5">
-
-            <div class="card h-10 border-start justify-content-center">
-                <div>
-                     <h3 class="flex-submit text-sm-center"> Realizado por: <i> María J. Carvajal</i> </h3> 
-                     <p class="card-text text-sm-center text-black-50"><i class="fa fa-envelope"></i> Email: mjulianacarvajal@aol.com <i class="fa fa-mobile fa-2x"></i> Telefono: 316-4451121</p>
-                     
-                </div>
-            </div>
-
     </div>
-</div> 
+        </div>
+    <div class="container">
+
 
     {% else %}
 
