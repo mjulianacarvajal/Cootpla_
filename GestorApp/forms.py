@@ -171,13 +171,16 @@ class GuardarBus(forms.ModelForm):
         raise forms.ValidationError(f"{placa_bus}: Esta placa ya existe en sistema")
 
 
+from .models import Conductor
+
 class GuardarProgramacion(forms.ModelForm):
     codigo = forms.CharField(max_length="250")
     programacion = forms.CharField()
+    conductor = forms.ModelChoiceField(queryset=Conductor.objects.all(), required=True)
 
     class Meta:
         model = Programacion
-        fields = ('codigo', 'bus', 'origen', 'destino', 'precio','programacion', 'estado')
+        fields = ('codigo', 'bus', 'origen', 'destino', 'precio', 'programacion', 'estado', 'conductor')
 
     def clean_codigo(self):
         id = self.instance.id if self.instance.id else 0

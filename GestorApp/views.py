@@ -16,6 +16,8 @@ from datetime import datetime
 
 from django.db.models import Q, QuerySet
 
+from django.utils import timezone
+
 context = {
     'page_title' : 'Visor de Viajes Intermunicipales',
 }
@@ -155,8 +157,9 @@ def sede(request: HttpRequest):
 def guardar_sede(request: HttpRequest):
     resp = {'status': 'failed', 'msg': ''}
     if request.method == 'POST':
-        if (request.POST['id']).isnumeric():
-            sede = Sede.objects.get(pk=request.POST['id'])
+        id_value = request.POST.get('id')
+        if id_value and id_value.isnumeric():
+            sede = Sede.objects.get(pk=id_value)
         else:
             sede = None
         if sede is None:
@@ -220,8 +223,9 @@ def bus(request: HttpRequest):
 def guardar_bus(request:HttpRequest):
     resp = {'status': 'failed', 'msg': ''}
     if request.method == 'POST':
-        if (request.POST['id']).isnumeric():
-            bus = Bus.objects.get(pk=request.POST['id'])
+        id_value = request.POST.get('id')
+        if id_value and id_value.isnumeric():
+            bus = Bus.objects.get(pk=id_value)
         else:
             bus = None
         if bus is None:
@@ -306,28 +310,23 @@ def programacion(request: HttpRequest):
 @login_required
 def guardar_programacion(request: HttpRequest):
     resp = {'status':'failed','msg':''}
-    print(f"datos: {request}")
     if request.method == 'POST':
-        if (request.POST['id']).isnumeric():
-           programacion = Programacion.objects.get(pk=request.POST['id'])
-        else:
-            programacion = None
-        if programacion is None:
-            form = GuardarProgramacion(request.POST)
-        else:
-            form = GuardarProgramacion(request.POST, instance=programacion)
+        form = GuardarProgramacion(request.POST)
         if form.is_valid():
-            form.save()
+            programacion = form.save(commit=False)
+            # convierte la hora a la zona horaria por defecto
+            programacion.programacion = timezone.make_aware(programacion.programacion, timezone.get_default_timezone())
+            programacion.save()
             messages.success(request, 'La Programación se ha guardado exitosamente.')
             resp['status'] = 'success'
         else:
-            #print(form.errors)
-            for fields in form:
-                for error in fields.errors:
+            for field in form:
+                for error in field.errors:
                     resp['msg'] += str(error + "<br>")
     else:
-         resp['msg'] = 'No se han guardado datos.'
-    return HttpResponse(json.dumps(resp), content_type = 'application/json')
+        resp['msg'] = 'No se han guardado datos.'
+    return HttpResponse(json.dumps(resp), content_type='application/json')
+
 
 
 #
