@@ -169,6 +169,17 @@ class GuardarBus(forms.ModelForm):
             return placa_bus.upper()
             # raise forms.ValidationError(f"{bus_number} Category Already Exists.")
         raise forms.ValidationError(f"{placa_bus}: Esta placa ya existe en sistema")
+    
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     origen = cleaned_data.get('origen')
+    #     destino = cleaned_data.get('destino')
+
+    #     # Verificar si ya existe una Programacion con la misma ruta y destino
+    #     if Programacion.objects.filter(origen=origen, destino=destino).exclude(id=self.instance.id).exists():
+    #         raise forms.ValidationError('Ya existe una Programacion con la misma ruta y destino.')
+
+    #     return cleaned_data
 
 
 from .models import Conductor
