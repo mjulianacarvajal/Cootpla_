@@ -6,9 +6,7 @@ from .models import Conductor,Sede, Propietario,Encomienda,Bus,Programacion
 
 # Register your models here.
 
-admin.site.register(Propietario)
-admin.site.register(Conductor)
-admin.site.register(Encomienda)
+
 
 class BusResource(resources.ModelResource):
     fields = ('propietario', 'numero_bus', 'placa_bus', 'asientos', 'estado',)
@@ -25,6 +23,7 @@ class EncomiendaResource(resources.ModelResource):
     fields = ('programacion', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido', 'cedula_recibido','telefono_recibido', 'caracteristicas', 'estado',)
     class Meta:
         model = Encomienda
+    list_display = ('programacion', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido', 'cedula_recibido','telefono_recibido', 'caracteristicas', 'estado',)
 
 class BusAdmin(admin.ModelAdmin):
     list_display = ('propietario','placa_bus','numero_bus','asientos','estado',)
@@ -55,3 +54,17 @@ class ProgramacionAdmin(ImportExportModelAdmin):
         return 'Administración de la Programación'
 
     search_fields = ('estado','codigo',)
+
+
+
+class EncomiendaAdmin(ImportExportModelAdmin):
+    resource_class = EncomiendaResource
+    list_display = ('programacion', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido', 'cedula_recibido','telefono_recibido', 'caracteristicas', 'estado',)
+    search_fields = ('programacion', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido', 'cedula_recibido','telefono_recibido', 'caracteristicas', 'estado',)
+
+    
+
+
+admin.site.register(Propietario)
+admin.site.register(Conductor)
+admin.site.register(Encomienda, EncomiendaAdmin)

@@ -237,6 +237,39 @@ class GuardarEncomienda(forms.ModelForm):
         fields = ('programacion', 'codigo', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido',
                   'cedula_recibido', 'telefono_recibido', 'codigo_encomienda', 'estado',)
 
+    def clean_codigo(self):
+            id = self.instance.id if self.instance.id else 0
+            if id > 0:
+                try:
+                    encomienda = Encomienda.objects.get(id=id)
+                    return encomienda.codigo_encomienda
+                except Encomienda.DoesNotExist:
+                    pass  # Handle the case when encomienda does not exist
+            else:
+                pref = datetime.today().strftime('%Y%m%d')
+                codigo_encomienda = str(1).zfill(4)
+                while True:
+                    prog = Encomienda.objects.filter(codigo=str(pref + codigo_encomienda)).count()
+                    if prog > 0:
+                        codigo_encomienda = str(int(codigo_encomienda) + 1).zfill(4)
+                    else:
+                        return pref + codigo_encomienda
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     """
     #asignar un código aleatorio
     def clean_codigo(self):

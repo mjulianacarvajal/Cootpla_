@@ -8,7 +8,9 @@
             <label for="programacion"  id="programacion" class="control-label">Viaje Programado</label>
             <select name="programacion"  class="form-select select2 rounded-0">
                     {% if not encomienda.programacion %}  
-                    <option selected></option>
+                        {% for encomienda in encomiendas %}
+                        <option value="{{ encomienda.id }}" >{{ encomienda.programacion }} </option>
+                        {% endfor %}
                     {% else %}
                     <option ></option>
                     {% endif %}
