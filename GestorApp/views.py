@@ -399,20 +399,22 @@ def encomienda(request: HttpRequest):
 
 
 @login_required
-def guardar_encomienda(request: HttpRequest):
+def guardar_encomienda(request):
     resp = {'status': 'failed', 'msg': ''}
+    
     if request.method == 'POST':
         form = GuardarEncomienda(data=request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'La encomienda ha guardado exitosamente')
             resp['status'] = 'success'
-    else:
-        for fields in form:
-            for error in fields.errors:
-                resp['msg'] += str(error + "<br>")
         else:
-            resp['msg'] = 'No se han guardado datos.'
+            for field_name, errors in form.errors.items():
+                for error in errors:
+                    resp['msg'] += f"{field_name}: {error}<br>"
+    else:
+        resp['msg'] = 'No se han guardado datos.'
+    
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 

@@ -219,23 +219,13 @@ class GuardarProgramacion(forms.ModelForm):
 
 
 class GuardarEncomienda(forms.ModelForm):
-    programacion = forms.CharField()
-    codigo = forms.CharField()
-    nombre_envio = forms.CharField(max_length="100")
-    cedula_envio = forms.CharField(max_length="12")
-    telefono_envio = forms.CharField(max_length="12")
-    nombre_recibido = forms.CharField(max_length="100")
-    cedula_recibido = forms.CharField(max_length="12")
-    telefono_recibido = forms.CharField(max_length="12")
-    codigo_encomienda = forms.CharField(max_length="5")
-    estado = forms.ChoiceField(choices=[('1', 'Programada'), ('2', 'Entregada')])
-
-    # 0 Aplazada, 1 Programada, 2 Entregada 3 Devuelta
+    programacion = forms.ModelChoiceField(queryset=Programacion.objects.all())
+   
 
     class Meta:
         model = Encomienda
-        fields = ('programacion', 'codigo', 'nombre_envio', 'cedula_envio', 'telefono_envio', 'nombre_recibido',
-                  'cedula_recibido', 'telefono_recibido', 'codigo_encomienda', 'estado',)
+        fields = ('programacion',)
+
 
     def clean_codigo(self):
             id = self.instance.id if self.instance.id else 0
